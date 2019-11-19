@@ -13,7 +13,7 @@ In either case, the input is expected to be a PEM-encoded x509 certificate with 
 ## Installation
 If you have [Go](https://golang.org) installed, simply `go get github.com/issacg/tasmota-fingerprint`
 
-Otherwise, [binary releases](https://github.com/issacg/tasmota-firmware/releases/latest) may be available.
+Otherwise, [binary releases](https://github.com/issacg/tasmota-fingerprint/releases/latest) may be available.
 
 ## Rationale
 The current implementation of TLS in the Tasmota project, without significantly altering the source code, requires either the use of a certificate issued by [LetsEncrypt](https://letsencrypt.org), or a [TOFU](https://en.wikipedia.org/wiki/Trust_on_first_use) security model.  While these are both legitimate models for many use cases, they don't cover the use cases available in previous versions of the firmware where it was trivial to pre-calculate the expected fingerprint of any key.  
