@@ -65,6 +65,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+
 	pub := cert.PublicKey.(*rsa.PublicKey)
 	buf := make([]byte, binary.MaxVarintLen64)
 	binary.LittleEndian.PutUint64(buf, uint64(pub.E))
@@ -73,9 +74,27 @@ func main() {
 	for start < len(buf) && buf[start] == 0 {
 		start++
 	}
+
+	e_bytes := buf[start:]
+	e_length := make([]byte, 4)
+	e_length[0] = byte(len(e_bytes) >> 24 & 255)
+	e_length[1] = byte(len(e_bytes) >> 16 & 255)
+	e_length[2] = byte(len(e_bytes) >>  8 & 255)
+	e_length[3] = byte(len(e_bytes) >>  0 & 255)
+
+	n_bytes := pub.N.Bytes()
+	n_length := make([]byte, 4)
+	n_length[0] = byte(len(n_bytes) >> 24 & 255)
+	n_length[1] = byte(len(n_bytes) >> 16 & 255)
+	n_length[2] = byte(len(n_bytes) >>  8 & 255)
+	n_length[3] = byte(len(n_bytes) >>  0 & 255)
+
 	ctx := sha1.New()
+	ctx.Write([]byte("\000\000\000\007")) // length of "ssh-rsa"
 	ctx.Write([]byte("ssh-rsa"))
-	ctx.Write(buf[start:])
-	ctx.Write(pub.N.Bytes())
-	fmt.Printf("% X", ctx.Sum(nil))
+	ctx.Write(e_length)
+	ctx.Write(e_bytes)
+	ctx.Write(n_length)
+	ctx.Write(n_bytes)
+	fmt.Printf("% X (Tasmota v8.4.0+)\n", ctx.Sum(nil))
 }
